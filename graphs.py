@@ -9,9 +9,19 @@ from matplotlib.figure import Figure
 import pandas as pd
 from statsmodels.tsa.stattools import adfuller
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+from statsmodels.tsa.arima.model import ARIMA
 
 def graphingforex():
     forex_df.plot.line('Date', 'Rate')
+
+def boxplot():
+    plt.boxplot(forex_df[['Date','Rate']].values)
+
+def pacp():
+    arima_forex = ARIMA(forex_df.values.reshape(-1).tolist(), order=(2,1,2))
+    print(arima_forex)
+    #plot_pacf(arima_forex, lags = 10)
+    #plt.show()
 
 
 def stationarity():
@@ -37,7 +47,10 @@ if __name__ == "__main__":
     #forex_df['Date']= pd.to_datetime(forex_df['Date'])
     forex_df['Date'] = pd.to_numeric(pd.to_datetime(forex_df['Date']))
     forex_df = forex_df.iloc[: , 1:]
-    #graphingforex()    
+    graphingforex()    
     #stationarity()
-    acf_pacf()
+    #acf_pacf()
+    #boxplot()
+    #pacp()
+    
     
