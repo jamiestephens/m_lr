@@ -28,16 +28,23 @@ def take3(filetext):
     soup = bs(content, 'html.parser')  
 
     table = soup.findChildren('table')[0]
-
     rows = table.findChildren('tr')
-
+    
+    dict = {"Date":[],"Rate":[]};
+    
     for row in rows:
         cells = row.findChildren('td')
         for cell in cells:
-            print(cell[1])
-            #cell_content = cell.getText()
-           # clean_content = re.sub( '\s+', ' ', cell_content).strip()
-            #print(clean_content)
+            cell_content = cell.getText()
+            clean_content = re.sub( '\s+', ' ', cell_content).strip()
+            if clean_content == 'EURO':
+                bool1 = True
+            else:
+                bool1 = False
+                
+            if str.isnumeric(clean_content) & bool1 == True:
+                dict["Rate"].append(clean_content)
+    print(dict)        
 
 def checkforwebscrape():
     file = pathlib.Path('forexscrape_1.csv')

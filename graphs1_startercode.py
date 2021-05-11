@@ -13,6 +13,8 @@ import plotly.express as px
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from statsmodels.nonparametric.smoothers_lowess import lowess
+from pandas.plotting import autocorrelation_plot
+import numpy as np
 
 
 def monthlyweekly(df):
@@ -38,25 +40,45 @@ def decomposition(df):
 
     print(df.head())
     
-    sm.graphics.tsa.plot_acf(df_monthly, lags=4);
+    sm.graphics.tsa.plot_acf(df_monthly, lags=10);
 
 def seasonality(df):    
     
     df['Rate365'] = df['Rate'].shift(365)
     df['Ratediff365'] = df['Rate'] - df['Rate365']
 
-    df['Rate7'] = df['Rate'].shift(7)
-    df['Ratediff7'] = df['Rate'] - df['Rate7']
+    df['Rate31'] = df['Rate'].shift(31)
+    df['Ratediff31'] = df['Rate'] - df['Rate31']
     
-    df = df[(df.index > '2020-01-01') & (df.index <= '2021-05-01')]
+    df = df[(df.index > '2017-01-01') & (df.index <= '2021-05-01')]
     df.reset_index(inplace=True)
     print(df.head())
     
-    plt.plot( 'Date', 'Rate7', data=df, marker='o', markerfacecolor='blue', markersize=12, color='skyblue', linewidth=4)
-    plt.plot( 'Date', 'Rate', data=df, marker='', color='olive', linewidth=2)
-    plt.plot( 'Date', 'Rate365', data=df, marker='', color='olive', linewidth=2, linestyle='dashed')
-    plt.legend()
+    #plt.plot( 'Date', 'Rate', data=df, marker='', color='blue', linewidth=1)
+    #plt.plot( 'Date', 'Rate31', data=df, marker='', color='green', linewidth=1,linestyle='dashed')
+    #plt.plot( 'Date', 'Rate365', data=df, marker='', color='olive', linewidth=1, linestyle='dashed')
+    #plt.legend()
     
+    
+    
+    corr = df.corr()
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    cax = ax.matshow(corr,cmap='coolwarm', vmin=-1, vmax=1)
+    fig.colorbar(cax)
+    ticks = np.arange(0,len(df.columns),1)
+    ax.set_xticks(ticks)
+    plt.xticks(rotation=90)
+    ax.set_yticks(ticks)
+    ax.set_xticklabels(df.columns)
+    ax.set_yticklabels(df.columns)
+    plt.show()
+    #arima(df)
+
+def arima(df):
+    df = df[(df.index > '2017-01-01') & (df.index <= '2021-05-01')] 
+    autocorrelation_plot(df)
+
 if __name__ == "__main__":
     forex_df = pd.read_csv('forexscrape.csv')
     forex_df = forex_df.iloc[: , 1:]
@@ -66,4 +88,5 @@ if __name__ == "__main__":
     #monthlyweekly(forex_df)
     #lowess(forex_df) #this doesnt work
     #decomposition(forex_df) #i don't know how to interpret this
-    seasonality(forex_df) #theres a valueerror when 
+    seasonality(forex_df)
+    #arima(forex_df)
