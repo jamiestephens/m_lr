@@ -5,14 +5,12 @@ Created on Sun May  9 00:12:23 2021
 @author: Administrator
 """
 
-
 from bs4 import BeautifulSoup as bs
 import requests
-import datetime
 import pandas as pd
+import pathlib
 
-def webscrape():
-    URL = 'https://www.federalreserve.gov/releases/h10/hist/dat00_eu.htm'
+def webscrape(URL):
     page = requests.get(URL)
     soup = bs(page.content,'html.parser')
     
@@ -28,19 +26,20 @@ def webscrape():
     
     forex_df['Date']= pd.to_datetime(forex_df['Date'])
     
-    oldest_date = forex_df["Date"].max() - datetime.timedelta(365)
+    forex_df = forex_df[forex_df.Rate != 'ND']
     
-    return forex_df
+    forex_df["Rate"] = forex_df["Rate"].astype(float).round(5)
+    print(forex_df.dtypes)
     
-def analys():
-    forex_df = webscrape.forex_df
-    
-    print(forex_df)
+    forex_df.to_csv(r'forexscrape.csv')
 
-
-def graphforex():
-    pass
+def checkforwebscrape():
+    file = pathlib.Path('forexscrape.csv')
+    if file.exists ():
+        "File already exists"
+    else:
+        print("Webscraping")
+        webscrape('https://www.federalreserve.gov/releases/h10/hist/dat00_eu.htm')
 
 if __name__ == "__main__":
-    webscrape()
-    analys()
+    checkforwebscrape()
