@@ -12,6 +12,7 @@ from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 from statsmodels.tsa.arima.model import ARIMA
 
 def graphingforex():
+    forex_df['Date']= pd.to_datetime(forex_df['Date'])
     forex_df.plot.line('Date', 'Rate')
 
 def boxplot():
@@ -22,7 +23,6 @@ def pacp():
     print(arima_forex)
     #plot_pacf(arima_forex, lags = 10)
     #plt.show()
-
 
 def stationarity():
     result = adfuller(forex_df, autolag='AIC')
@@ -47,10 +47,10 @@ if __name__ == "__main__":
     #forex_df['Date']= pd.to_datetime(forex_df['Date'])
     forex_df['Date'] = pd.to_numeric(pd.to_datetime(forex_df['Date']))
     forex_df = forex_df.iloc[: , 1:]
-    graphingforex()    
+    #graphingforex()    
     #stationarity()
     #acf_pacf()
     #boxplot()
-    #pacp()
+    pacp()
     
     

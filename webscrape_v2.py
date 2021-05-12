@@ -53,7 +53,6 @@ def checkforwebscrape():
     else:
         print("Webscraping: harder version")
         webpageopen('https://www.federalreserve.gov/releases/h10/default.htm')
-        #webscrapingharderversion('https://www.federalreserve.gov/releases/h10/default.htm')
 
 if __name__ == "__main__":
     checkforwebscrape()

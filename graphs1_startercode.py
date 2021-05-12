@@ -16,7 +16,6 @@ from statsmodels.nonparametric.smoothers_lowess import lowess
 from pandas.plotting import autocorrelation_plot
 import numpy as np
 
-
 def monthlyweekly(df):
     # df.Date.duplicated().sum() = 0
     df = df[(df.index > '2020-01-01') & (df.index <= '2021-05-01')]
@@ -43,7 +42,6 @@ def decomposition(df):
     sm.graphics.tsa.plot_acf(df_monthly, lags=10);
 
 def seasonality(df):    
-    
     df['Rate365'] = df['Rate'].shift(365)
     df['Ratediff365'] = df['Rate'] - df['Rate365']
 
@@ -53,13 +51,22 @@ def seasonality(df):
     df = df[(df.index > '2017-01-01') & (df.index <= '2021-05-01')]
     df.reset_index(inplace=True)
     print(df.head())
+    plt.plot( 'Date', 'Rate', data=df, marker='', color='blue', linewidth=1)
+    plt.plot( 'Date', 'Rate31', data=df, marker='', color='green', linewidth=1,linestyle='dashed')
+    plt.plot( 'Date', 'Rate365', data=df, marker='', color='olive', linewidth=1, linestyle='dashed')
+    plt.xlabel("Date")    
+    plt.ylabel("EUR/USD Exchange Rate")
+    plt.legend()
     
-    #plt.plot( 'Date', 'Rate', data=df, marker='', color='blue', linewidth=1)
-    #plt.plot( 'Date', 'Rate31', data=df, marker='', color='green', linewidth=1,linestyle='dashed')
-    #plt.plot( 'Date', 'Rate365', data=df, marker='', color='olive', linewidth=1, linestyle='dashed')
-    #plt.legend()
+def correlationchart(df):    
+    df['Rate365'] = df['Rate'].shift(365)
+    df['Ratediff365'] = df['Rate'] - df['Rate365']
+
+    df['Rate31'] = df['Rate'].shift(31)
+    df['Ratediff31'] = df['Rate'] - df['Rate31']
     
-    
+    df = df[(df.index > '2017-01-01') & (df.index <= '2021-05-01')]
+    df.reset_index(inplace=True)
     
     corr = df.corr()
     fig = plt.figure()
@@ -73,7 +80,7 @@ def seasonality(df):
     ax.set_xticklabels(df.columns)
     ax.set_yticklabels(df.columns)
     plt.show()
-    #arima(df)
+    print(df.corr(method ='pearson'))
 
 def arima(df):
     df = df[(df.index > '2017-01-01') & (df.index <= '2021-05-01')] 
@@ -87,6 +94,7 @@ if __name__ == "__main__":
     forex_df.sort_index(inplace=True)
     #monthlyweekly(forex_df)
     #lowess(forex_df) #this doesnt work
-    #decomposition(forex_df) #i don't know how to interpret this
-    seasonality(forex_df)
+    decomposition(forex_df) #i don't know how to interpret this
+    #seasonality(forex_df)
     #arima(forex_df)
+    #correlationchart(forex_df)

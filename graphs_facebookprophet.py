@@ -11,17 +11,23 @@ import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from statsmodels.nonparametric.smoothers_lowess import lowess
 from pandas.plotting import autocorrelation_plot
-from prophet import Prophet
+from fbprophet import Prophet
 
 def prophet():
-    forex_df = pd.read_csv('forexscrape.csv')
-    forex_df = forex_df.iloc[: , 1:]
-    forex_df['Date']= pd.to_datetime(forex_df['Date'])
-    forex_df = forex_df.set_index('Date')
-    forex_df.sort_index(inplace=True)
+    df = pd.read_csv('forexscrape.csv')
+    df = df.iloc[: , 1:]
+    df.columns = ['ds', 'y']
+    df['ds']= pd.to_datetime(df['ds'])
+    #df = df.set_index('ds')
+    #df.sort_index(inplace=True)
     
 
-
+    m = Prophet()
+    m.fit(df)
+    
+    future = m.make_future_dataframe(periods=365,freq='D')
+    print(future.info())
+    print(future.tail())
 
 if __name__ == "__main__":
     prophet()
