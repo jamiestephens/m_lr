@@ -26,7 +26,7 @@ def prophetbasics(df):
     
  # mae and graphing 30 days predicted and actual:
     fig, ax = plt.subplots(figsize=(12,6))
-    x = 287
+    x = 365
     y_true = df['y'][-x:].values
     y_pred = forecast['yhat'][-x:].values
     
@@ -35,16 +35,16 @@ def prophetbasics(df):
     
     y_true1 = df
     y_true1 = y_true1.set_index('ds')
-    y_pred1 = forecast[['ds','yhat']].tail(x+50)
+    y_pred1 = forecast[['ds','yhat']].tail(x)
     y_pred1 = y_pred1.set_index('ds')
     
     y_pred = forecast['yhat'][-x:].values
     
     ax.plot(y_true1,color='blue',linewidth=3, alpha=0.3,label='Actual')
     ax.plot(y_pred1,color='green',linewidth=1,label='Predicted')
-    plt.ylim([1, 1.3])
-    plt.xlim(['2020-03-20','2021-10-01'])
-    plt.title("Predicted EUR/USD Prices")
+    plt.ylim([1.1, 1.25])
+    plt.xlim(['2021-01-01','2021-11-01'])
+    plt.title("Predicted EUR/USD Exchange Rate")
     plt.xlabel('Date')
     plt.ylabel('EUR/USD Rate')
     plt.grid()
@@ -69,6 +69,6 @@ if __name__ == "__main__":
     df = df.rename(columns={'Date':'ds', 'Rate':'y'})
     df['ds']= pd.to_datetime(df['ds'])
     endoftestdata = (df['ds'].max())-relativedelta(months=+1)
-    df = df[(df.ds > '2020-03-15')]
+    df = df[(df.ds > '2008-07-01')]
     prophetbasics(df)
     
