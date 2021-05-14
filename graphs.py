@@ -46,10 +46,9 @@ if __name__ == "__main__":
     forex_df = pd.read_csv('forexscrape.csv')
     #forex_df['Date']= pd.to_datetime(forex_df['Date'])
     forex_df['Date'] = pd.to_numeric(pd.to_datetime(forex_df['Date']))
-    forex_df = forex_df.iloc[: , 1:]
     #graphingforex()    
     #stationarity()
-    #acf_pacf()
+    acf_pacf()
     #boxplot()
     pacp()
     

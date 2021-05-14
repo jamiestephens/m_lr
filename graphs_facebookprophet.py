@@ -12,22 +12,63 @@ from matplotlib.figure import Figure
 from statsmodels.nonparametric.smoothers_lowess import lowess
 from pandas.plotting import autocorrelation_plot
 from fbprophet import Prophet
+from fbprophet.plot import plot_plotly, plot_components_plotly
+from dateutil.relativedelta import *
+from sklearn.metrics import mean_absolute_error
+import numpy as np
 
-def prophet():
-    df = pd.read_csv('forexscrape.csv')
-    df = df.iloc[: , 1:]
-    df.columns = ['ds', 'y']
-    df['ds']= pd.to_datetime(df['ds'])
-    #df = df.set_index('ds')
-    #df.sort_index(inplace=True)
-    
 
+def prophetbasics(df):
     m = Prophet()
     m.fit(df)
+    future = m.make_future_dataframe(periods=30,freq='D')
+    forecast = m.predict(future)    
     
-    future = m.make_future_dataframe(periods=365,freq='D')
-    print(future.info())
-    print(future.tail())
+ # mae and graphing 30 days predicted and actual:
+    fig, ax = plt.subplots(figsize=(12,6))
+    x = 287
+    y_true = df['y'][-x:].values
+    y_pred = forecast['yhat'][-x:].values
+    
+    mae = mean_absolute_error(y_true, y_pred)
+    print('MAE: %.3f' % mae)
+    
+    y_true1 = df
+    y_true1 = y_true1.set_index('ds')
+    y_pred1 = forecast[['ds','yhat']].tail(x+50)
+    y_pred1 = y_pred1.set_index('ds')
+    
+    y_pred = forecast['yhat'][-x:].values
+    
+    ax.plot(y_true1,color='blue',linewidth=3, alpha=0.3,label='Actual')
+    ax.plot(y_pred1,color='green',linewidth=1,label='Predicted')
+    plt.ylim([1, 1.3])
+    plt.xlim(['2020-03-20','2021-10-01'])
+    plt.title("Predicted EUR/USD Prices")
+    plt.xlabel('Date')
+    plt.ylabel('EUR/USD Rate')
+    plt.grid()
+    plt.legend()
+    plt.show()
+    
+    correlation_matrix = np.corrcoef(y_pred, y_true)
+    correlation_xy = correlation_matrix[0,1]
+    r_squared = correlation_xy**2
+    print("Rsquared is: ",r_squared)
+ # ^ mae and graphing 30 days predicted and actual
+
+    fig1 = m.plot(forecast)
+    fig2 = m.plot_components(forecast)
+
+    plot_plotly(m, forecast)
+    forecast = forecast[['ds','trend']]
+    forecast = forecast[(forecast.ds > endoftestdata)]
 
 if __name__ == "__main__":
-    prophet()
+    df = pd.read_csv('forexscrape.csv')
+    df = df.rename(columns={'Date':'ds', 'Rate':'y'})
+    df['ds']= pd.to_datetime(df['ds'])
+    endoftestdata = (df['ds'].max())-relativedelta(months=+1)
+    df = df[(df.ds > '2020-03-15')]
+    prophetbasics(df)
+    
